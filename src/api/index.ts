@@ -28,7 +28,7 @@ API.interceptors.request.use((req: TODO) => {
 					console.log('err below')
 					console.log(error.response.data.message)
 				})
-			// window.location.href = '/login'
+			window.location.href = '/login'
 			localStorage.removeItem('userName')
 			localStorage.removeItem('userRole')
 		}
@@ -52,8 +52,9 @@ export const getMeetupLeadList = (
 	const endDate1 = '2022-01-30'
 	const encodeHours = encodeURIComponent('00:00:00.000')
 	// return Scheduledata
+	console.log('request sent', `/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000`)
 	return API.get(
-		`/api/customer/leads/scheduleList?leadId=${id}&startDate=${startDate}+${encodeHours}&endDate=${endDate}+${encodeHours}`
+		`/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000`
 	)
 	return API.get('http://localhost:4444/lead-detail/meetings')
 }
@@ -259,7 +260,7 @@ export const markIncompleteWorking = (id: number) => {
 
 
 export const createMeetup = (data: any) => {
-	return API.post('/api/customer/leads/schedule', data, {
+	return API.post('/api/v1/schedule/save', data, {
 		headers: {
 			'Content-Type': 'application/json',
 		},

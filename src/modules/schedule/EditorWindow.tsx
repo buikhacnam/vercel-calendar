@@ -169,7 +169,7 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 			startDateTime: startDateTime.replace(/\s/g, 'T'),
 			endDateTime: endDateTime.replace(/\s/g, 'T'),
 			participator: participatorData,
-			leadIds: mapToValue(leads.value, true),
+			// leadIds: mapToValue(leads.value, true),
 		}
 
 		if (type === 'update') {
@@ -196,11 +196,11 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 			focused: false,
 			inputValue: '',
 		})
-		setLeads({
-			value: [],
-			focused: false,
-			inputValue: '',
-		})
+		// setLeads({
+		// 	value: [],
+		// 	focused: false,
+		// 	inputValue: '',
+		// })
 		formRef?.current?.setFieldsValue({ time: null })
 	}
 	const ready = name && startDateTime && endDateTime
@@ -230,13 +230,13 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 								onChange={e => setName(e.target.value)}
 							/>
 						</div>
-						<div>
+						{/* <div>
 							<span className='label'>Lead liên quan</span>
 							<InputSearchLead
 								state={leads}
 								setState={setLeads}
 							/>
-						</div>
+						</div> */}
 						<div>
 							<span className='label'>Thời gian *</span>
 							<FormStyled ref={formRef}>
@@ -342,7 +342,7 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 			) : (
 				<div>
 					<Wrapper>
-						<div>
+						{/* <div>
 							<span className='label' style={{ marginBottom: 0 }}>
 								Lead liên quan
 							</span>
@@ -374,7 +374,7 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 										)
 									})}
 							</div>
-						</div>
+						</div> */}
 						<div>
 							<span className='label'>Thời gian</span>
 							<Tag style={{ padding: '0.3rem' }}>
