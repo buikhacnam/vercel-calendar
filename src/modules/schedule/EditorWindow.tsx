@@ -5,20 +5,18 @@ import {
 	Button,
 	Divider,
 	Popconfirm,
-	Tag,
 	Form,
 	Modal,
+	Select,
 } from 'antd'
-import { UserOutlined, WarningOutlined } from '@ant-design/icons'
+import { WarningOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import { formatDate2 } from '../../utils/common/date-utils'
 import TagInput from '../../components/inputs/InputTag'
-import InputSearchLead from '../../components/inputs/InputSearchLead'
-import { getRelatedLeads } from '../../api'
+import { getCategoryList, getScheduleDetail } from '../../api'
 import styled from 'styled-components'
 import { IAppState } from '../../redux/reducers/rootReducer'
-import { useSelector, useDispatch } from 'react-redux'
-import { WorkingActionTypes } from '../../redux/constants/working/workingConstants'
+import { useSelector } from 'react-redux'
 const { RangePicker } = DatePicker
 
 const mapToValue = (data: TODO, isLeadid = false) => {
@@ -101,47 +99,46 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 		mapToLabel(dataSelected?.participator)
 	)
 	const [errParticipator, setErrParticipator] = useState<string>('')
-
-	const [leads, setLeads] = useState({
-		value: [],
-		focused: false,
-		inputValue: '',
-	})
+	const [categories, setCategories] = useState<number[]>([])
+	const [categoryList, setCategoryList] = useState<any[]>([])
 	const workDrawerState = useSelector(
 		(state: IAppState) => state.workingDrawer
 	)
 	const { detail } = workDrawerState
-	const dispatch = useDispatch()
 	const formRef = useRef<any>(null)
+
 	useEffect(() => {
-		if (dataSelected?.leadIds?.length) {
-			fetchRelatedLead(dataSelected?.leadIds)
+		fetchCategories()
+		if (dataSelected?.id) {
+			fetchScheduleDetail()
 		}
 	}, [])
 
-	const fetchRelatedLead = async (leadArr: number[]) => {
+	const fetchCategories = async () => {
 		try {
-			console.log('leadArr', leadArr)
-			const res = await getRelatedLeads(leadArr)
-			const responseData = res?.data?.responseData
-			setLeads({
-				value: responseData?.map((item: TODO) => {
-					return {
-						label: item.fullName,
-						value: item.fullName,
-						id: item.id,
-					}
-				}),
-				focused: false,
-				inputValue: '',
-			})
-			console.log('res relateed', res)
+			const resCategory = await getCategoryList()
+			console.log('resCategory', resCategory)
+			const data = resCategory?.data?.responseData?.listObject || []
+			setCategoryList(data)
 		} catch (err) {
-			console.log('err', err)
+			console.log(err)
 		}
 	}
 
-	// const [leadIds, setLeadIds] = useState<number[]>([])
+	const fetchScheduleDetail = async () => {
+		try {
+			const res = await getScheduleDetail(dataSelected?.id)
+			console.log('res schedule detaillllllllllllll', res)
+			const data = res?.data?.responseData?.categories || []
+			if (data?.length > 0) {
+				const ids = data.map((item: any) => item.id)
+				setCategories(ids)
+			}
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
 	function onChangeDate(value: any, dateString: any) {
 		if (!value?.[0] && !value?.[1]) {
 			setStartDateTime('')
@@ -169,7 +166,7 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 			startDateTime: startDateTime.replace(/\s/g, 'T'),
 			endDateTime: endDateTime.replace(/\s/g, 'T'),
 			participator: participatorData,
-			// leadIds: mapToValue(leads.value, true),
+			categories,
 		}
 
 		if (type === 'update') {
@@ -196,11 +193,7 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 			focused: false,
 			inputValue: '',
 		})
-		// setLeads({
-		// 	value: [],
-		// 	focused: false,
-		// 	inputValue: '',
-		// })
+		setCategories([])
 		formRef?.current?.setFieldsValue({ time: null })
 	}
 	const ready = name && startDateTime && endDateTime
@@ -219,110 +212,133 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 	}
 	return (
 		<>
-			{!detail ? (
-				<div>
-					<Wrapper>
-						<div>
-							<span className='label'>Tiêu đề *</span>
-							<Input
-								placeholder='Nhập nội dung'
-								value={name}
-								onChange={e => setName(e.target.value)}
-							/>
-						</div>
-						{/* <div>
+			<div>
+				<Wrapper>
+					<div>
+						<span className='label'>Tiêu đề *</span>
+						<Input
+							placeholder='Nhập nội dung'
+							value={name}
+							onChange={e => setName(e.target.value)}
+						/>
+					</div>
+					{/* <div>
 							<span className='label'>Lead liên quan</span>
 							<InputSearchLead
 								state={leads}
 								setState={setLeads}
 							/>
 						</div> */}
-						<div>
-							<span className='label'>Thời gian *</span>
-							<FormStyled ref={formRef}>
-								<Form.Item name='time'>
-									<RangePickerStyle
-										onChange={onChangeDate}
-										onOk={onOkDate}
-										showTime={{ format: 'HH:mm' }}
-										format='DD/MM/YYYY HH:mm'
-										placeholder={['Bắt đầu', 'Kết thúc']}
-										defaultValue={
-											type !== 'brand-new'
-												? [
-														moment(
-															startDateTime,
-															'YYYY/MM/DD HH:mm:ss'
-														),
-														moment(
-															endDateTime,
-															'YYYY/MM/DD HH:mm:ss'
-														),
-												  ]
-												: undefined
-										}
-									/>
-								</Form.Item>
-							</FormStyled>
-						</div>
-						<div>
-							<span className='label'>Thành phần tham gia</span>
-							<TagInput
-								style={{ background: '#ffffff', marginTop: 0 }}
-								fieldName='email'
-								state={participator}
-								setState={setParticipator}
-								errMessage={errParticipator}
-								setErrMessage={setErrParticipator}
-							/>
-						</div>
-
-						<div>
-							<span className='label'>Địa điểm</span>
-							<Input
-								placeholder='Nhập thông tin'
-								value={location}
-								onChange={e => setLocation(e.target.value)}
-							/>
-						</div>
-						<div>
-							<span className='label'>Mô tả</span>
-							<Input.TextArea
-								autoSize={{ minRows: 3 }}
-								placeholder='Nhập thông tin'
-								value={description}
-								onChange={e => setDescription(e.target.value)}
-							/>
-						</div>
-					</Wrapper>
-					<div style={{ paddingLeft: 24, paddingRight: 24 }}>
-						<Divider style={{ margin: '20px 0px' }} />
-
-						<ActionWrapper>
-							<Popconfirm
-								title='Bạn có chắc chắn muốn xóa?'
-								onConfirm={() => confirmDelete(dataSelected.id)}
-								onCancel={() => {}}
-								okText='Có'
-								cancelText='Không'
-							>
-								{dataSelected?.id && detail && (
-									<Button disabled={loading}>Xóa</Button>
-								)}
-							</Popconfirm>
-							<div>
-								<Button
-									disabled={!ready || loading}
-									onClick={
-										ready ? () => handleSubmit() : () => {}
+					<div>
+						<span className='label'>Categories</span>
+						<Select
+							onChange={(e: any) => {
+								console.log(e.join())
+								setCategories(e)
+							}}
+							mode='multiple'
+							allowClear
+							placeholder='Select Categories'
+							style={{ width: '100%' }}
+							value={categories}
+						>
+							{categoryList?.length > 0 &&
+								categoryList.map((item: any) => (
+									<Select.Option
+										key={item.id}
+										value={item.id}
+									>
+										{item.name}
+									</Select.Option>
+								))}
+						</Select>
+					</div>
+					<div>
+						<span className='label'>Thời gian *</span>
+						<FormStyled ref={formRef}>
+							<Form.Item name='time'>
+								<RangePickerStyle
+									onChange={onChangeDate}
+									onOk={onOkDate}
+									showTime={{ format: 'HH:mm' }}
+									format='DD/MM/YYYY HH:mm'
+									placeholder={['Bắt đầu', 'Kết thúc']}
+									defaultValue={
+										type !== 'brand-new'
+											? [
+													moment(
+														startDateTime,
+														'YYYY/MM/DD HH:mm:ss'
+													),
+													moment(
+														endDateTime,
+														'YYYY/MM/DD HH:mm:ss'
+													),
+											  ]
+											: undefined
 									}
-									type='primary'
-									loading={loading}
-									style={{ marginRight: '5px' }}
-								>
-									Lưu
-								</Button>
-								{type !== 'update' && !detail &&  (
+								/>
+							</Form.Item>
+						</FormStyled>
+					</div>
+					<div>
+						<span className='label'>Thành phần tham gia</span>
+						<TagInput
+							style={{ background: '#ffffff', marginTop: 0 }}
+							fieldName='email'
+							state={participator}
+							setState={setParticipator}
+							errMessage={errParticipator}
+							setErrMessage={setErrParticipator}
+						/>
+					</div>
+
+					<div>
+						<span className='label'>Địa điểm</span>
+						<Input
+							placeholder='Nhập thông tin'
+							value={location}
+							onChange={e => setLocation(e.target.value)}
+						/>
+					</div>
+					<div>
+						<span className='label'>Mô tả</span>
+						<Input.TextArea
+							autoSize={{ minRows: 3 }}
+							placeholder='Nhập thông tin'
+							value={description}
+							onChange={e => setDescription(e.target.value)}
+						/>
+					</div>
+				</Wrapper>
+				<div style={{ paddingLeft: 24, paddingRight: 24 }}>
+					<Divider style={{ margin: '20px 0px' }} />
+
+					<ActionWrapper>
+						<Popconfirm
+							title='Bạn có chắc chắn muốn xóa?'
+							onConfirm={() => confirmDelete(dataSelected.id)}
+							onCancel={() => {}}
+							okText='Có'
+							cancelText='Không'
+						>
+							{dataSelected?.id && detail && (
+								<Button disabled={loading}>Xóa</Button>
+							)}
+						</Popconfirm>
+						<div>
+							<Button
+								disabled={!ready || loading}
+								onClick={
+									ready ? () => handleSubmit() : () => {}
+								}
+								type='primary'
+								loading={loading}
+								style={{ marginRight: '5px' }}
+							>
+								Lưu
+							</Button>
+							{type !== 'update' && !detail && (
 								<Button
 									disabled={!ready || loading}
 									onClick={
@@ -334,128 +350,12 @@ const EditorWindow: React.FC<EditorWindowProps> = ({
 									loading={loading}
 								>
 									Lưu và Thêm mới
-								</Button>)}
-							</div>
-						</ActionWrapper>
-					</div>
-				</div>
-			) : (
-				<div>
-					<Wrapper>
-						{/* <div>
-							<span className='label' style={{ marginBottom: 0 }}>
-								Lead liên quan
-							</span>
-							<div>
-								{leads?.value?.length > 0 &&
-									leads.value.map((item: TODO) => {
-										return (
-											<Tag
-												icon={
-													<UserOutlined
-														style={{
-															color: '#ffffff',
-														}}
-													/>
-												}
-												color='#108ee9'
-												key={item?.value}
-												style={{
-													padding: '0.2rem',
-													margin: '5px 5px 0 0',
-												}}
-											>
-												<span
-													style={{ color: '#ffffff' }}
-												>
-													{item?.value}
-												</span>
-											</Tag>
-										)
-									})}
-							</div>
-						</div> */}
-						<div>
-							<span className='label'>Thời gian</span>
-							<Tag style={{ padding: '0.3rem' }}>
-								<span style={{ color: '#8083A3' }}>
-									{formatDate2(startDateTime)}
-								</span>
-							</Tag>
-							<Tag style={{ padding: '0.3rem' }}>
-								<span style={{ color: '#8083A3' }}>
-									{formatDate2(endDateTime)}
-								</span>
-							</Tag>
-						</div>
-						<div>
-							<span className='label' style={{ marginBottom: 0 }}>
-								Thành phần tham gia
-							</span>
-							{participator?.value?.length > 0 &&
-								participator.value.map((item: TODO) => {
-									return (
-										<Tag
-											icon={
-												<UserOutlined
-													style={{ color: '#ffffff' }}
-												/>
-											}
-											color='#108ee9'
-											key={item?.value}
-											style={{
-												padding: '0.2rem',
-												margin: '5px 5px 0 0',
-											}}
-										>
-											<span style={{ color: '#ffffff' }}>
-												{item?.value}
-											</span>
-										</Tag>
-									)
-								})}
-						</div>
-						<div>
-							<span className='label'>Địa điểm</span>
-							<p>{location}</p>
-						</div>
-						<div>
-							<span className='label'>Mô tả</span>
-							<p>{description}</p>
-						</div>
-					</Wrapper>
-					<div style={{ paddingLeft: 24, paddingRight: 24 }}>
-						<Divider style={{ margin: '20px 0px' }} />
-
-						<ActionWrapper>
-							{dataSelected?.id && (
-								<Button
-									onClick={() => confirm()}
-									disabled={loading}
-								>
-									Xóa
 								</Button>
 							)}
-							<div>
-								<Button
-									disabled={!ready || loading}
-									onClick={() =>
-										dispatch({
-											type:
-												WorkingActionTypes.TOGGLE_WORKING_DETAIL_DRAWER,
-											payload: false,
-										})
-									}
-									type='primary'
-									loading={loading}
-								>
-									Cập nhật
-								</Button>
-							</div>
-						</ActionWrapper>
-					</div>
+						</div>
+					</ActionWrapper>
 				</div>
-			)}
+			</div>
 		</>
 	)
 }
@@ -475,12 +375,12 @@ const Wrapper = styled.div`
 	.ant-picker,
 	ul {
 		input {
-			border-radius: 6px;
+			/* border-radius: 6px; */
 		}
 	}
 
 	.ant-picker {
-		border-radius: 6px;
+		/* border-radius: 6px; */
 	}
 `
 

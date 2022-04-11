@@ -297,7 +297,7 @@ const InputTagWrapper = styled.div<TODO>`
 		padding-left: 0;
 	}
 
-	border-radius: 6px;
+	/* border-radius: 6px; */
 	border: ${props =>
 		!props.errMessage ? '1px solid #d1d5db' : '1px solid #ff4d4f'};
 	box-shadow: 0px 1px 2px rgb(0 0 0 / 5%);

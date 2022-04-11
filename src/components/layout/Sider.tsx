@@ -163,7 +163,7 @@ const SubMenuStyled = styled(SubMenu)`
 		&:hover {
 			color: #ffffff;
 		}
-		border-radius: 6px;
+		/* border-radius: 6px; */
 	}
 
 	.ant-menu-sub.ant-menu-inline {

@@ -45,22 +45,32 @@ export default API
 export const getMeetupLeadList = (
 	startDate: string,
 	endDate: string,
-	leadId?: string
+	categoryId?: string
 ) => {
-	let id = leadId ? leadId : ''
-	const startDate1 = '2022-01-01'
-	const endDate1 = '2022-01-30'
-	const encodeHours = encodeURIComponent('00:00:00.000')
+
 	// return Scheduledata
-	console.log('request sent', `/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000`)
+	console.log('request sent', `/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000&categories=${categoryId}`)
 	return API.get(
-		`/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000`
+		`/api/v1/schedule/calendar?fromDate=${startDate}T00:00:00.000000&toDate=${endDate}T23:59:59.000000&categories=${categoryId}`
 	)
-	return API.get('http://localhost:4444/lead-detail/meetings')
+}
+
+export const createMeetup = (data: any) => {
+	return API.post('/api/v1/schedule/save', data, {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+}
+
+export const getCategoryList = () => {
+	return API.get('/api/v1/schedule-categories/search')
 }
 
 
-
+export const getScheduleDetail = (id: number) => {
+	return API.get(`/api/v1/schedule/details/${id}`)
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -259,13 +269,7 @@ export const markIncompleteWorking = (id: number) => {
 
 
 
-export const createMeetup = (data: any) => {
-	return API.post('/api/v1/schedule/save', data, {
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-}
+
 
 export const getNoteLeadList = (leadId: string) => {
 	// return API.get('http://localhost:4444/lead-detail/notes')

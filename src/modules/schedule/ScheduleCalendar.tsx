@@ -12,9 +12,9 @@ import {
 } from '@syncfusion/ej2-react-schedule'
 import { L10n } from '@syncfusion/ej2-base'
 import styled from 'styled-components'
-import { Drawer, message, Typography } from 'antd'
+import { Drawer, message, Select, Typography } from 'antd'
 import EditorWindow from './EditorWindow'
-import { createMeetup, getMeetupLeadList } from '../../api'
+import { createMeetup, getCategoryList, getMeetupLeadList } from '../../api'
 import LoadingSpinner, { SpinOverlay } from '../../components/LoadingSpinner'
 import { useDispatch, useSelector } from 'react-redux'
 import { IAppState } from '../../redux/reducers/rootReducer'
@@ -51,6 +51,8 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 	const [dataSelected, setDataSelected] = useState<any>(null)
 	const [titleModal, setTitleModal] = useState<string>('')
 	const [drag, setDrag] = useState(false)
+	const [categories, setCategories] = useState<string>('')
+	const [categoryList, setCategoryList] = useState<any[]>([])
 	const createWorkingState = useSelector(
 		(state: IAppState) => state.createWorking
 	)
@@ -63,17 +65,30 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 	const { open, unmount } = drawerVisibleState
 
 	useEffect(() => {
-		fetchCalendarData(dateRange.start, dateRange.end)
-	}, [success, dateRange])
+		fetchCalendarData(dateRange.start, dateRange.end, categories)
+	}, [success, dateRange,categories])
 
-	const fetchCalendarData = async (start: string, end: string) => {
-		console.log('ffff', start, end)
+	useEffect(() => {
+		fetchCategories()
+	}, [])
+
+	const fetchCategories = async () => {
+		try {
+			const resCategory = await getCategoryList()
+			const data = resCategory?.data?.responseData?.listObject
+			setCategoryList(data)
+		} catch(err) {
+			console.log(err)
+		}
+	}
+
+	const fetchCalendarData = async (start: string, end: string, categories: string) => {
 		if (!start || !end) {
 			setLoading(false)
 			return
 		}
 		try {
-			const res = await getMeetupLeadList(start, end)
+			const res = await getMeetupLeadList(start, end, categories)
 			console.log('res schedula data', res)
 			const response = res?.data?.responseData
 			setScheduleData(response)
@@ -90,7 +105,6 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 
 		try {
 			const res = await createMeetup(data)
-			console.log('res of onSubmit', res)
 			if (titleModal === 'new') {
 				message.success('Tạo mới thành công')
 			} else {
@@ -114,16 +128,14 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 
 		if (drag) {
 			setDrag(false)
-			fetchCalendarData(dateRange.start, dateRange.end)
+			fetchCalendarData(dateRange.start, dateRange.end, categories)
 		}
 	}
 
 	const onActionFailure = (args: any) => {
-		console.log('errr', args)
 	}
 
 	const onCellClick = (args: any) => {
-		console.log('onCellClick', args)
 		setTitleModal('new')
 		setDataSelected(args)
 		dispatch({ type: WorkingActionTypes.MOUNT_WORKING_DRAWER })
@@ -136,7 +148,6 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 		// calendarRef?.current.openEditor(args, 'Add')
 	}
 	const onEventClick = (args: any) => {
-		console.log('onEventClick', args)
 		setTitleModal('update')
 		setDataSelected(args?.event)
 		dispatch({ type: WorkingActionTypes.MOUNT_WORKING_DRAWER })
@@ -177,7 +188,6 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 
 	const onResize = (args: any) => {
 		setDrag(true)
-		console.log('onResize', args)
 		setTitleModal('update')
 		setDataSelected(args?.data)
 		dispatch({ type: WorkingActionTypes.MOUNT_WORKING_DRAWER })
@@ -193,7 +203,6 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 	}
 
 	const onDataBinding = (args: any) => {
-		console.log('args', args)
 		const scheduleObj: any = (document.querySelector('.e-schedule') as any)
 			.ej2_instances[0]
 		const currentViewDates: Date[] = scheduleObj.getCurrentViewDates()
@@ -201,7 +210,7 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 		let endDate: Date = currentViewDates[currentViewDates.length - 1]
 		const nextEndDate = new Date(endDate)
 		// get the end date of the next day since the api only support the time is 00:00:00
-		nextEndDate.setDate(endDate.getDate() + 1)
+		// nextEndDate.setDate(endDate.getDate() + 1)
 		const start = formatDate2(startDate.toString(), true)
 		const end = formatDate2(nextEndDate.toString(), true)
 
@@ -229,6 +238,19 @@ const ScheduleCalendar: React.FC<Props> = ({}) => {
 	return (
 		<Wrapper>
 			{loading && <SpinOverlay />}
+			<div style={{marginBottom: 16}}>
+				<Select
+					onChange={(e: any) => {
+						setCategories(e.join())
+					}}
+					mode="multiple"
+					allowClear
+					placeholder="Select Categories"
+					style={{ width: '100%' }}
+				>
+					{categoryList?.length > 0 && categoryList.map((item: any) => (<Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>))}
+				</Select>
+			</div>
 			<ScheduleComponent
 				ref={calendarRef}
 				eventSettings={{
