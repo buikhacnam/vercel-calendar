@@ -43,7 +43,7 @@ const SalePage: React.FC<Props> = ({}) => {
 				path='/schedule-categories'
 				element={<LazyComponent component={'LazyCategories'} />}
 			/>
-			<Route path='/*' element={<Navigate to='/dashboard' />} />
+			<Route path='/*' element={<Navigate to='/calendar' />} />
 		</Routes>
 	)
 }

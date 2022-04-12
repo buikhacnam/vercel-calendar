@@ -97,7 +97,7 @@ export default function LoginPage() {
 			<Wrapper>
 				<Container>
 					<div style={{ textAlign: 'center' }}>
-						<img src='/img/lynkid.svg' alt='Workflow' />
+						
 						<h2 style={{ fontWeight: '800 !important' }}>
 							Sign in to your account
 						</h2>

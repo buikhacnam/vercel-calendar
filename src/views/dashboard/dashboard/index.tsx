@@ -1,23 +1,17 @@
 import React from 'react'
-import Cookie from 'js-cookie'
-import { message } from 'antd'
-import {useNavigate} from 'react-router-dom'
+
 
 interface dashboardProps {
 
 }
 
 const DashboardPage: React.FC<dashboardProps> = ({}) => {
-    const navigate = useNavigate()
-    const logoutUser = () => {
-        Cookie.remove('crm-refresh')
-        Cookie.remove('crm-access')
-        Cookie.remove('crm-user')
-        message.success('You have been logged out')
-        navigate('/login')
-    }
+
     return <>
-    <img src='/img/fake-dashboard.svg' width='100%' height='auto'/>
+        <p>The project was developed by <a href='buinam.com'>Bui Nam</a> with ❤️</p>
+
+        <p>Backend source code: <a href='https://github.dev/buikhacnam/springboot-schedule-manager'>https://github.dev/buikhacnam/springboot-schedule-manager</a></p>
+        <p>Frontend source code: <a href='https://github.dev/buikhacnam/schedule-manager-ui'>https://github.dev/buikhacnam/schedule-manager-ui</a></p>
     </>
 }
 export default DashboardPage

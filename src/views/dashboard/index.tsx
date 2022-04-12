@@ -58,7 +58,7 @@ const Dashboard: React.FC<IndexProps> = () => {
 									element={<Navigate to='/dashboard' />}
 								/> */}
 								<Route
-									path='/dashboard'
+									path='/about'
 									element={
 										<LazyComponent
 											component={'LazyDashboard'}
@@ -75,7 +75,7 @@ const Dashboard: React.FC<IndexProps> = () => {
 								/>
 								<Route
 									path='/*'
-									element={<Navigate to='/dashboard' />}
+									element={<Navigate to='/schedule/calendar' />}
 								/>
 							</Routes>
 						</Content>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Layout, Menu } from 'antd'
+import { Avatar, Layout, Menu, Typography } from 'antd'
 import {
 	HomeOutlined,
 	CalendarOutlined,
@@ -42,7 +42,7 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 
 
 	return (
-		<div style={{ position: 'relative', background: '#fbfbff' }}>
+		<div style={{ position: 'relative' }}>
 			{isPopUpRoute && <OverlayDiv />}
 
 			<SiderStyled
@@ -50,20 +50,19 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 				onCollapse={onCollapse}
 				collapsedWidth={45}
 				width={255}
-				style={{ background: '#fbfbff' }}
 				collapsed={width < 768 ? true : collapsed}
 				checkWidth={width}
 			>
 				{!collapsed && width > 768 ? (
-					<div style={{ margin: '20px 16px' }}>
+					<div style={{ margin: '20px 8px', }}>
 						<Link to='/'>
-							<img src='/img/lynkid.svg' alt='lynkid' />
+						<Typography.Title level={2} style={{background: '#5795f9', padding: 5}}>NOW APP</Typography.Title>
 						</Link>
 					</div>
 				) : (
 					<div style={{ margin: '20px 8px' }}>
 						<Link to='/'>
-							<img src='/img/id-logo.svg' alt='lynkid' />
+							{/* <img src='/img/id-logo.svg' alt='lynkid' /> */}
 						</Link>
 					</div>
 				)}
@@ -72,7 +71,7 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 					selectedKeys={
 						keyMap[pathname]
 							? keyMap[pathname]
-							: '/dashboard'
+							: '/about'
 					}
 					mode='inline'
 					defaultOpenKeys={['schedule']}
@@ -92,7 +91,7 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 						</ItemStyled>
 					{/* </SubMenuStyled> */}
 
-					<ItemStyled key='/dashboard' icon={<HomeOutlined />}>
+					<ItemStyled key='/about' icon={<HomeOutlined />}>
 						About
 					</ItemStyled>
 

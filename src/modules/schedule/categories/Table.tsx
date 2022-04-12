@@ -8,15 +8,24 @@ import RenderPagination from '../../../components/Pagination'
 import { ContextValueType, useProviderContext } from './Context'
 
 const RenderAction = (action: string, props?: any) => {
+	const {
+		dataSearch,
+		setDrawerVis,
+		setDataId
 	
+	}: ContextValueType = useProviderContext()
 	const { id } = props
 	// const navigate = useNavigate()
 	const menu = (
 		<Menu>
-			{/* <Menu.Item
+			<Menu.Item
+				onClick={() => {
+					setDataId(id)
+					setDrawerVis(true)
+				}}
 			>
 				Cập nhật
-			</Menu.Item> */}
+			</Menu.Item>
 			<Menu.Item
 				onClick={() =>
 					deleteConfirm(
@@ -47,6 +56,8 @@ const DataTable: React.FC = () => {
 
 	const {
 		dataSearch,
+		setDrawerVis,
+		setDataId
 	
 	}: ContextValueType = useProviderContext()
 
@@ -60,7 +71,11 @@ const DataTable: React.FC = () => {
 				return a.name.localeCompare(b.name)
 			},
 			render: (text: string, record: any) => {
-				return <span style={{color: record?.colorSchedule}}>{text}</span>
+				const {id} = record
+				return <a onClick={() => {
+					setDataId(id)
+					setDrawerVis(true)
+				}}>{text}</a>
 			}
 		},
 		{

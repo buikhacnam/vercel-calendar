@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Form, Input, Select, Button, message, Divider } from 'antd'
-import {  createCategories } from '../../../api'
+import {  createCategories, getCategoryDetail } from '../../../api'
 import { ContextValueType, useProviderContext } from './Context'
 const { Item } = Form
 const { Option } = Select
@@ -16,28 +16,27 @@ const ProjectForm: React.FC<ProjectFormProps> = ({}) => {
 
 	useEffect(() => {
         if(dataId) {
-            fetchPermissionDetail(dataId)
+            fetchDataDetail(dataId)
         } else {
             clearForm()
         }
 	}, [dataId])
 
 
-    const fetchPermissionDetail = async (id: number) => {
-        // try {
-        //     const res = await getPermissionDetail(id)
-        //     console.log('res data detail', res)
-        //     const data = res?.data?.responseData
+    const fetchDataDetail = async (id: number) => {
+        try {
+            const res = await getCategoryDetail(id)
+            console.log('res data detail', res)
+            const data = res?.data?.responseData
 
-        //     formRef.current.setFieldsValue({
-        //         code: data?.code || '',
-        //         name: data?.name || '',
-        //         description: data?.description || '',
-        //         status: data?.status || '',
-        //     })
-        // } catch (err) {
-        //     console.log(err)
-        // }
+            formRef.current.setFieldsValue({
+                colorSchedule: data?.colorSchedule || '',
+                name: data?.name || '',
+                description: data?.description || '',
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const pushData = async(data: any) => {
@@ -61,10 +60,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({}) => {
 
     const clearForm = () => {
         formRef.current.setFieldsValue({
-            code: null,
+            colorSchedule: null,
             name: null,
             description: null,
-            status: null,
         })
     }
 

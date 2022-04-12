@@ -93,6 +93,9 @@ export const createCategories = (data: any) => {
 	return API.post(`/api/v1/schedule-categories/save`, data)
 }
 
+export const getCategoryDetail = (id: number) => {
+	return API.get(`/api/v1/schedule-categories/detail/${id}`)
+}
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
