@@ -42,6 +42,11 @@ export default API
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+export const searchMeetup = (pageNumber: number, pageSize: number, q: string) => {
+	console.log('search meetup', `/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}&q=${q}`)
+	return API.get(`/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)
+}
+
 export const getMeetupLeadList = (
 	startDate: string,
 	endDate: string,
@@ -70,6 +75,22 @@ export const getCategoryList = () => {
 
 export const getScheduleDetail = (id: number) => {
 	return API.get(`/api/v1/schedule/details/${id}`)
+}
+
+export const fetchUsers = (
+	textSearch: string
+) => {
+	return API.get(
+		`api/v1/security/users?textSearch=${textSearch}`
+	)
+}
+
+export const searchCategories = (q: string) => {
+	return API.get(`/api/v1/schedule-categories/search?${q}`)
+}
+
+export const createCategories = (data: any) => {
+	return API.post(`/api/v1/schedule-categories/save`, data)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

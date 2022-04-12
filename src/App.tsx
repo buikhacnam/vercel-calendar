@@ -69,7 +69,7 @@ const skeletonMap: TODO = {
 }
 
 const LazyComponent = ({ component, ...props }: TODO) => {
-	const isAuthenticated = checkAuth2()
+	const isAuthenticated = checkAuth()
 	const View = Components?.[component] || Components['LazyDashboard']
 	return (
 		<Suspense

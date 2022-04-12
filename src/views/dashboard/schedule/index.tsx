@@ -5,6 +5,8 @@ import LoadingSpinner from '../../../components/LoadingSpinner'
 const Components: TODO = {
 
 	LazyCalendar: lazy(() => import('./calendar')),	
+	LazyScheduleManager: lazy(() => import('./schedule-manager')),
+	LazyCategories: lazy(() => import('./schedule-categories')),
 }
 
 // might need different types of loading later.
@@ -32,6 +34,14 @@ const SalePage: React.FC<Props> = ({}) => {
 			<Route
 				path='/calendar'
 				element={<LazyComponent component={'LazyCalendar'} />}
+			/>
+			<Route
+				path='/schedule-manager'
+				element={<LazyComponent component={'LazyScheduleManager'} />}
+			/>
+			<Route
+				path='/schedule-categories'
+				element={<LazyComponent component={'LazyCategories'} />}
 			/>
 			<Route path='/*' element={<Navigate to='/dashboard' />} />
 		</Routes>

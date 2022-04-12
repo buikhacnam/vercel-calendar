@@ -7,7 +7,7 @@ export default function deleteConfirm(
 	onOk: (id?: any) => void,
 	onCancel = () => {},
 	okText = 'Xóa',
-	cancelText = 'Để sau'
+	cancelText = 'Để sau',
 ) {
 	Modal.confirm({
 		title,
@@ -15,7 +15,7 @@ export default function deleteConfirm(
 		content,
 		okText,
 		cancelText,
-		okButtonProps: { danger: true },
+		okButtonProps: { danger: true, disabled: true },
 		onOk,
 		width: 450,
 	})

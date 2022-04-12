@@ -14,12 +14,12 @@ import { L10n } from '@syncfusion/ej2-base'
 import styled from 'styled-components'
 import { Drawer, message, Select, Typography } from 'antd'
 import EditorWindow from './EditorWindow'
-import { createMeetup, getCategoryList, getMeetupLeadList } from '../../api'
-import LoadingSpinner, { SpinOverlay } from '../../components/LoadingSpinner'
+import { createMeetup, getCategoryList, getMeetupLeadList } from '../../../api'
+import LoadingSpinner, { SpinOverlay } from '../../../components/LoadingSpinner'
 import { useDispatch, useSelector } from 'react-redux'
-import { IAppState } from '../../redux/reducers/rootReducer'
-import { WorkingActionTypes } from '../../redux/constants/working/workingConstants'
-import { formatDate2 } from '../../utils/common/date-utils'
+import { IAppState } from '../../../redux/reducers/rootReducer'
+import { WorkingActionTypes } from '../../../redux/constants/working/workingConstants'
+import { formatDate2 } from '../../../utils/common/date-utils'
 
 const { Title } = Typography
 interface Props {}

@@ -11,11 +11,11 @@ import {
 } from 'antd'
 import { WarningOutlined } from '@ant-design/icons'
 import moment from 'moment'
-import { formatDate2 } from '../../utils/common/date-utils'
-import TagInput from '../../components/inputs/InputTag'
-import { getCategoryList, getScheduleDetail } from '../../api'
+import { formatDate2 } from '../../../utils/common/date-utils'
+import TagInput from '../../../components/inputs/InputTag'
+import { getCategoryList, getScheduleDetail } from '../../../api'
 import styled from 'styled-components'
-import { IAppState } from '../../redux/reducers/rootReducer'
+import { IAppState } from '../../../redux/reducers/rootReducer'
 import { useSelector } from 'react-redux'
 const { RangePicker } = DatePicker
 

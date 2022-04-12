@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Layout, Menu } from 'antd'
 import {
-	RiseOutlined,
 	HomeOutlined,
-	FlagOutlined,
-	TeamOutlined,
-	SettingOutlined,
+	CalendarOutlined,
+	BarChartOutlined,
+	DotChartOutlined
+
 } from '@ant-design/icons'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import SubMenu from 'antd/lib/menu/SubMenu'
 import styled from 'styled-components'
 import useWindowSize from '../../utils/common/use-window-size'
@@ -20,7 +20,9 @@ interface SiderProps {}
 
 const keyMap: any = {
 	'/schedule/calendar': '/schedule/calendar',
-	'/schedule/manager': '/schedule/manager',
+	'/schedule/schedule-manager': '/schedule/schedule-manager',
+	'/schedule/schedule-categories': '/schedule/schedule-categories',
+
 }
 
 
@@ -75,19 +77,24 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 					mode='inline'
 					defaultOpenKeys={['schedule']}
 				>
-					<ItemStyled key='/dashboard' icon={<HomeOutlined />}>
-						Dashboard
-					</ItemStyled>
+					
 
 
-					<SubMenuStyled key='schedule' title='Schedule' icon={<RiseOutlined />} >
-						<Item key='/schedule/calendar'>
+					{/* <SubMenuStyled key='schedule' title='Schedule' icon={<RiseOutlined />} > */}
+						<ItemStyled key='/schedule/calendar' icon={<CalendarOutlined />}>
 							<span>Calendar</span>
-						</Item>
-						<Item key='/schedule/manager'>
-							<span>Manager</span>
-						</Item>
-					</SubMenuStyled>
+						</ItemStyled>
+						<ItemStyled key='/schedule/schedule-manager' icon={<BarChartOutlined />}>
+							<span>Schudule Manager</span>
+						</ItemStyled>
+						<ItemStyled key='/schedule/schedule-categories' icon={<DotChartOutlined />}>
+							<span>Categories Manager</span>
+						</ItemStyled>
+					{/* </SubMenuStyled> */}
+
+					<ItemStyled key='/dashboard' icon={<HomeOutlined />}>
+						About
+					</ItemStyled>
 
 				</MenuStyled>
 			</SiderStyled>
@@ -109,10 +116,10 @@ const OverlayDiv = styled.div`
 
 const SiderStyled = styled(Sider)<any>`
 	height: calc(100vh - 0px);
-	background: #fbfbff;
+	background: #ffffff;
 	overflow-y: auto;
 	.ant-layout-sider-trigger {
-		background: #fbfbff;
+		background: #ffffff;
 		color: #3b82f6;
 		visibility: ${props => (props.checkWidth > 768 ? 'visible' : 'hidden')};
 	}
@@ -120,7 +127,7 @@ const SiderStyled = styled(Sider)<any>`
 
 const MenuStyled = styled(Menu)`
 	/* height: calc(100vh - 0px); */
-	background: #fbfbff;
+	background: #ffffff;
 	/* overflow-x: hidden; */
 	.ant-menu-item::after {
 		border-right: none;
@@ -153,33 +160,33 @@ const MenuStyled = styled(Menu)`
 
 const SubMenuStyled = styled(SubMenu)`
 	&.ant-menu-item {
-		padding-left: 24px !important;
+		/* padding-left: 24px !important; */
 	}
 
 	.ant-menu-item-selected {
-		background: #3b82f6 !important;
-		color: #ffffff;
+		/* background: #3b82f6 !important; */
+		/* color: #ffffff; */
 		border-right: none;
 		&:hover {
-			color: #ffffff;
+			/* color: #ffffff; */
 		}
 		/* border-radius: 6px; */
 	}
 
 	.ant-menu-sub.ant-menu-inline {
-		background: #fbfbff;
+		background: #ffffff;
 	}
 `
 
 const ItemStyled = styled(Item)`
 	&.ant-menu-item-selected {
-		background: #3b82f6 !important;
-		color: #ffffff;
+		/* background: #3b82f6 !important; */
+		/* color: #ffffff; */
 		border-right: none;
 		&:hover {
-			color: #ffffff;
+			/* color: #ffffff; */
 		}
-		border-radius: 6px;
+		/* border-radius: 6px; */
 	}
 
 	&.ant-menu-item {

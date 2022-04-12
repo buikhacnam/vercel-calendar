@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Tag, Popover, Empty, Menu, Dropdown } from 'antd'
 import styled from 'styled-components'
-import { searchLeadText } from '../../api'
+import { fetchUsers } from '../../api'
 import { CustomSpin } from '../LoadingSpinner'
 import EmptyData from '../EmptyData'
 
@@ -26,17 +26,17 @@ const InputSearchLead: React.FC<Props> = ({ state, setState }) => {
 	const inputRef = React.useRef<HTMLInputElement>(null)
 
 	useEffect(() => {
-		if (state.inputValue) {
+		// if (state.inputValue) {
 			console.log('useEffect input value change', state.inputValue)
 			getLeads()
-		}
+		// }
 	}, [state.inputValue])
 
 	const getLeads = async () => {
 		setLoading(true)
 		try {
-			const res = await searchLeadText(1, 20, state.inputValue)
-			const resData = res?.data?.responseData?.listObject
+			const res = await fetchUsers(state.inputValue)
+			const resData = res?.data?.responseData || []
 			setLeads(resData)
 			console.log('res', res)
 		} catch (err) {
@@ -261,12 +261,12 @@ const PopOverLeads = ({ leads, handleSelectItem, loading }: any) => {
 						<Menu.Item
 							key={item?.id}
 							onClick={() => {
-								console.log('click', item.fullName)
+								console.log('click', item?.name)
 								handleSelectItem(item.fullName, item.id)
 							}}
 							className='item-list'
 						>
-							{item.fullName}
+							{item.name}
 						</Menu.Item>
 					)
 				})
