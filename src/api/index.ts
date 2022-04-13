@@ -42,6 +42,11 @@ export default API
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+export const test = () => {
+	return API.get(`/api/v1/security/test`)
+}
+
+
 export const searchMeetup = (pageNumber: number, pageSize: number, q: string) => {
 	console.log('search meetup', `/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}&q=${q}`)
 	return API.get(`/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)

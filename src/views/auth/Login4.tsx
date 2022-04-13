@@ -1,12 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../../redux/actions/user/userActions'
 import { UserActionTypes } from '../../redux/constants/user/userConstants'
 import styled from 'styled-components'
 import { ExclamationCircleFilled, LockFilled } from '@ant-design/icons'
-import { Spin } from 'antd'
+import { message, Spin } from 'antd'
+import { test } from '../../api'
 
 export default function LoginPage() {
 	const dispatch = useDispatch()
@@ -23,8 +24,15 @@ export default function LoginPage() {
 		password: '',
 	})
 
+	const [ready, setReady] = useState(false)
+
 	const userState = useSelector((state: TODO) => state.userProfile)
 	const { loading, errorMessage } = userState
+
+
+	useEffect(() => {
+		checkServer()
+	}, [])
 
 	const validate = (name: string, value: string) => {
 		switch (name) {
@@ -61,6 +69,16 @@ export default function LoginPage() {
 		}
 	}
 
+	const checkServer = async () => {
+		try {
+			const res = await test()
+			console.log("dyno is waken up")
+			setReady(true)
+		} catch(err) {
+			message.error("unable to connect to server")
+		}
+	}
+
 	const handleChange = (v: React.ChangeEvent<HTMLInputElement>) => {
 		dispatch({ type: UserActionTypes.LOGIN_CLEAR_ERROR })
 		setLoginValue({
@@ -89,7 +107,7 @@ export default function LoginPage() {
 
 	return (
 		<div style={{ background: '#F9FAFB', height: '100vh' }}>
-			{loading && (
+			{(loading || !ready) && (
 				<LoadingOverlay>
 					<Spin className='xoay' size='large' />
 				</LoadingOverlay>
