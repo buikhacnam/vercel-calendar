@@ -10,6 +10,7 @@ const Components: TODO = {
 	LazyDashboard: lazy(() => import('./views/dashboard')),
 	LazyView2: lazy(() => import('./views/view2')),
 	LazyLoginView: lazy(() => import('./views/auth/Login4')),
+	LazyRegisterView: lazy(() => import('./views/signup/Signup')),
 }
 
 const checkAuth = () => {
@@ -76,7 +77,7 @@ const LazyComponent = ({ component, ...props }: TODO) => {
 			// fallback={skeletonMap[component]}
 			fallback={<LoadingSpinner />}
 		>
-			{isAuthenticated || component === 'LazyLoginView' ? (
+			{isAuthenticated || component === 'LazyLoginView' || component === 'LazyRegisterView' ? (
 				<View {...props} />
 			) : (
 				<Navigate to='/login' replace />
@@ -118,6 +119,12 @@ const App: React.FC<AppProps> = () => {
 							path='/login'
 							element={
 								<LazyComponent component={'LazyLoginView'} />
+							}
+						/>
+						<Route
+							path='/signup'
+							element={
+								<LazyComponent component={'LazyRegisterView'} />
 							}
 						/>
 						<Route

@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { searchMeetup } from '../../../api'
 
@@ -58,8 +59,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 				loading: false,
 			})
 			console.log('res data search', dataRes)
-		} catch (err) {
-			console.log(err)
+		} catch (err:any) {
+			if(err?.response?.status === 403) {
+				message.error('You are not authorized to access this page!', 10)
+			}
 		}
 	}
 

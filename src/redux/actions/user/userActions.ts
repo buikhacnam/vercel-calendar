@@ -4,7 +4,7 @@ import { UserActionTypes } from '../../constants/user/userConstants'
 import Cookies from 'js-cookie'
 import { message } from 'antd'
 import {NavigateFunction} from "react-router-dom"
-import { login } from '../../../api/auth/login'
+import { login, register } from '../../../api/auth/login'
 
 export const loginUser = (user: {userName: string, password: string, remember: string}, navigate: NavigateFunction) => {
 	return async function (dispatch: Dispatch) {
@@ -37,6 +37,27 @@ export const loginUser = (user: {userName: string, password: string, remember: s
 			console.log('err', err.response)
 			message.error(err?.response?.data?.error ||  'Something went wrong!')
 			dispatch({ type: UserActionTypes.LOGIN_USER_FAILURE, payload: err?.response?.data?.error  || 'Something went wrong!' })
+		}
+		// dispatch({ type: UserActionTypes.LOGIN_CLEAR_ERROR })
+	}
+}
+
+
+
+export const registerUser = (user: {userName: string, password: string, remember: string}, navigate: NavigateFunction) => {
+	return async function (dispatch: Dispatch) {
+		const { userName, password } = user
+		try {
+			dispatch({ type: UserActionTypes.LOGIN_USER_REQUEST })
+			const response = await register(userName, password)
+			console.log('res', response)
+			
+			message.success('Sign up thành công!')
+			navigate('/login')
+		} catch (err: any) {
+			console.log('err', err.response)
+			message.error(err?.response?.data?.message ||  'Something went wrong!')
+			dispatch({ type: UserActionTypes.LOGIN_USER_FAILURE, payload: err?.response?.data?.message  || 'Something went wrong!' })
 		}
 		// dispatch({ type: UserActionTypes.LOGIN_CLEAR_ERROR })
 	}

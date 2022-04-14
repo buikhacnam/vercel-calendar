@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { loginUser } from '../../redux/actions/user/userActions'
+import { loginUser, registerUser } from '../../redux/actions/user/userActions'
 import { UserActionTypes } from '../../redux/constants/user/userConstants'
 import styled from 'styled-components'
 import { ExclamationCircleFilled, LockFilled } from '@ant-design/icons'
@@ -101,7 +101,7 @@ export default function LoginPage() {
 		})
 		dispatch({ type: UserActionTypes.LOGIN_CLEAR_ERROR })
 		if (userName && password) {
-			dispatch(loginUser(values, navigate))
+			dispatch(registerUser(values, navigate))
 		}
 	}
 
@@ -118,10 +118,10 @@ export default function LoginPage() {
 					<div style={{ textAlign: 'center' }}>
 						
 						<h2 style={{ fontWeight: '800 !important' }}>
-							Sign in to your account
+							Sign up
 						</h2>
 						<p>
-							Don't have account yet? <Link to='/signup'>sign up</Link>
+							Already have account yet? <Link to='/login'>sign in</Link>
 						</p>
 					</div>
 					<form onSubmit={e => handleSubmit(e, loginValue)}>
@@ -212,7 +212,7 @@ export default function LoginPage() {
 								{errorMessage}
 							</span>
 						)}
-						<Remember>
+						{/* <Remember>
 							<div>
 								<input
 									id='remember-me'
@@ -232,7 +232,7 @@ export default function LoginPage() {
 									Ghi nhớ đăng nhập
 								</label>
 							</div>
-						</Remember>
+						</Remember> */}
 
 						<div style={{ marginTop: '1.5rem' }}>
 							<button type='submit'>
@@ -240,12 +240,10 @@ export default function LoginPage() {
 									<LockFilled />
 									{/* <LockClosedIcon aria-hidden='true' /> */}
 								</span>
-								{loading ? 'Signing in ...' : 'Sign in'}
+								{loading ? 'Signing up ...' : 'Sign up'}
 							</button>
 						</div>
-						<br/>
-						<span>Testing admin account: buinam</span><br></br>
-											<p>password: 1234</p>
+						
 					</form>
 				</Container>
 			</Wrapper>
