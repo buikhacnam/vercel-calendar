@@ -25,12 +25,14 @@
     "redux": "^4.1.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.1",
+    "sockjs-client": "^1.6.0",
+    "stompjs": "^2.3.3",
     "styled-components": "^5.3.3",
     "typescript": "^4.5.4",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3006 && react-scripts start",
     "build": "CI=false && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -58,6 +60,9 @@
     "@types/js-cookie": "^3.0.1",
     "@types/react-router-dom": "^5.3.2",
     "@types/redux-logger": "^3.0.9",
+    "@types/sockjs-client": "^1.5.1",
+    "@types/stompjs": "^2.3.5",
     "@types/styled-components": "^5.1.18"
+    
   }
 }

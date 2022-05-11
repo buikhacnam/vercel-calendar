@@ -11,6 +11,7 @@ const { Content } = Layout
 const Components: TODO = {
 	LazyDashboard: lazy(() => import('./dashboard')),
 	LazySchedule: lazy(() => import('./schedule')),
+	LazyChat: lazy(() => import('./chat')),
 }
 
 // might need different types of loading later.
@@ -74,8 +75,16 @@ const Dashboard: React.FC<IndexProps> = () => {
 									}
 								/>
 								<Route
+									path='/chat/*'
+									element={
+										<LazyComponent component={'LazyChat'} />
+									}
+								/>
+								<Route
 									path='/*'
-									element={<Navigate to='/schedule/calendar' />}
+									element={
+										<Navigate to='/schedule/calendar' />
+									}
 								/>
 							</Routes>
 						</Content>

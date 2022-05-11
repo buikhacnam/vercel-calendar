@@ -22,6 +22,7 @@ const keyMap: any = {
 	'/schedule/calendar': '/schedule/calendar',
 	'/schedule/schedule-manager': '/schedule/schedule-manager',
 	'/schedule/schedule-categories': '/schedule/schedule-categories',
+	'/chat': '/chat',
 
 }
 
@@ -70,8 +71,7 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 					onClick={redirect}
 					selectedKeys={
 						keyMap[pathname]
-							? keyMap[pathname]
-							: '/about'
+							
 					}
 					mode='inline'
 					defaultOpenKeys={['schedule']}
@@ -94,6 +94,11 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 					<ItemStyled key='/about' icon={<HomeOutlined />}>
 						About
 					</ItemStyled>
+
+					<ItemStyled key='/chat' icon={<HomeOutlined />}>
+						Chat
+					</ItemStyled>
+
 
 				</MenuStyled>
 			</SiderStyled>
