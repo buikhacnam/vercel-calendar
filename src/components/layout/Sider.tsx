@@ -4,7 +4,8 @@ import {
 	HomeOutlined,
 	CalendarOutlined,
 	BarChartOutlined,
-	DotChartOutlined
+	DotChartOutlined,
+	MessageOutlined
 
 } from '@ant-design/icons'
 import { useNavigate, Link } from 'react-router-dom'
@@ -90,14 +91,14 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 							<span>Categories Manager</span>
 						</ItemStyled>
 					{/* </SubMenuStyled> */}
-
+					<ItemStyled key='/chat' icon={<MessageOutlined />}>
+						Chat
+					</ItemStyled>
 					<ItemStyled key='/about' icon={<HomeOutlined />}>
 						About
 					</ItemStyled>
 
-					<ItemStyled key='/chat' icon={<HomeOutlined />}>
-						Chat
-					</ItemStyled>
+					
 
 
 				</MenuStyled>

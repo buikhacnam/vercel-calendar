@@ -46,9 +46,21 @@ export const test = () => {
 	return API.get(`/api/v1/security/test`)
 }
 
+export const test2 = () => {
+	return API.get(`/api/v1/chat-history/124`)
+}
+
+export const getChatHistoryOfTwoUsers = (sender: string, receiver: string,pageNumber: number, pageSize: number, q: string) => {
+	return API.get(`/api/v1/chat-history/private?senderName=${sender}&receiverName=${receiver}&pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)
+}
+
+export const getConversations = (sender: string) => {
+	return API.get(`/api/v1/chat-history/conversation/${sender}`)
+}
+
 
 export const searchMeetup = (pageNumber: number, pageSize: number, q: string) => {
-	console.log('search meetup', `/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}&q=${q}`)
+	console.log('search meetup', `/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)
 	return API.get(`/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)
 }
 
