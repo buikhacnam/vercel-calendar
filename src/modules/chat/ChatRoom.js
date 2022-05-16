@@ -9,9 +9,7 @@ const initialSearch = {
 	message: { value: '' },
 }
 let stompClient =null;
-const readStore = {
-
-}
+const readStore = {}
 
 const ChatRoom = () => {
     const messagesEndRef = useRef(null)
@@ -36,7 +34,7 @@ const ChatRoom = () => {
 
     console.log('private chat',privateChats);
     console.log('tab',tab)
-    console.log('read', read)
+    console.log('read', read, 'readStore', readStore)
 
     useEffect(() => {
       console.log(userData);
@@ -73,24 +71,12 @@ const ChatRoom = () => {
         if(data && data?.length > 0){
             for(let i = 0; i < data.length; i++){
                 const item = data[i];
-                if(item.userOne !== item.userTwo && item.userOne !== userName){
-                    privateChats.set(item.userOne,[]);
-                    setRead({
-                        ...read,
-                        [item.userOne]: item.unReadOne
-                    })
-                    readStore[item.userOne] = item.unReadOne
-                }
-                if(item.userOne !== item.userTwo && item.userTwo !== userName){
-                    privateChats.set(item.userTwo,[]);
-                    setRead({
-                        ...read,
-                        [item.userTwo]: item.unReadTwo
-                    })
-                    readStore[item.userTwo] = item.unReadTwo
-                }
+                console.log('ITEM', item)
+                privateChats.set(item.user, [])
+                readStore[item.user] = item.unRead
             }
             setPrivateChats(privateChats);
+            setRead({...readStore})
         }
     }
 
@@ -105,9 +91,14 @@ const ChatRoom = () => {
         if (conversation || conversation?.length > 0) {
             const reversedConversation = conversation.reverse();
             console.log("conversation", reversedConversation)
-            privateChats.get(receiver).unshift(...reversedConversation)
+            if(page.current <= 1) {
+                privateChats.set(receiver, [...reversedConversation])
+            } else {
+                privateChats.get(receiver).unshift(...reversedConversation)
+            }
+            
             setPrivateChats(new Map(privateChats));
-            scrollToBottom()
+            if(page.current <= 1) scrollToBottom()
         }
         
         
@@ -161,9 +152,20 @@ const ChatRoom = () => {
         m.info(payloadData.senderName + " just sent you a message");
         console.log("tab", tab, 'tabRef', tabRef, 'read', read, 'payloadData.senderName', payloadData.senderName)
 
-        if(tabRef.current !== payloadData.senderName){
-            readStore[payloadData.senderName] = readStore[payloadData.senderName] + 1
+        if(tabRef.current !== payloadData.senderName) {
+            
+
+            if(!privateChats.get(payloadData.senderName)){
+                let list =[];
+                // list.push(payloadData);
+                privateChats.set(payloadData.senderName,list);
+                setPrivateChats(new Map(privateChats));
+            }
+
+            readStore[payloadData.senderName] = readStore[payloadData.senderName] || 0 + 1
+            console.log('readStore', readStore)
             setRead({...readStore})
+
             return
         }
        
@@ -171,12 +173,13 @@ const ChatRoom = () => {
             console.log("privateChats 102", privateChats);
             privateChats.get(payloadData.senderName).push(payloadData);
             setPrivateChats(new Map(privateChats));
-        }if(!privateChats.get(payloadData.senderName)){
-            let list =[];
-            list.push(payloadData);
-            privateChats.set(payloadData.senderName,list);
-            setPrivateChats(new Map(privateChats));
         }
+        // if(!privateChats.get(payloadData.senderName)){
+        //     let list =[];
+        //     list.push(payloadData);
+        //     privateChats.set(payloadData.senderName,list);
+        //     setPrivateChats(new Map(privateChats));
+        // }
         scrollToBottom()
   
     }
@@ -246,13 +249,13 @@ const ChatRoom = () => {
                         }} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li>
                     {[...privateChats.keys()].map((name,index)=>(
                         <li 
-                            onClick={name === tab? () => {} : ()=>{
+                            onClick={name === tab? () => { seenMessageAction(userData.username, name)} : ()=>{
                                 tabRef.current = name
                                 setTab(name)
                                 setPage({current: 1, pageSize: 15})
+                                setRead({...read, [name]: 0})
+                                seenMessageAction(userData.username, name)
                                 console.log('onclick name tab', name, userData.username)
-                                localStorage.removeItem(`${name}-unread`)
-                                // getPrivateChatHistory(userData.username, name);
                             }} 
                             className={`member ${tabRef.current===name && "active"}`} key={index}>
                                 {(read[name])? name + ` (${read[name]})`:  name}
