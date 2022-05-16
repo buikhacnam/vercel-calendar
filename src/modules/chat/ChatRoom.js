@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
-import { getChatHistoryOfTwoUsers, getConversations, test2 } from '../../api';
-import RenderPagination from '../../components/Pagination';
+import { getChatHistoryOfTwoUsers, getConversations, seenMessage } from '../../api';
 import RenderPaginationSimple from '../../components/PaginationSimple';
 import { Button, Input, message as m }  from 'antd';
 
@@ -10,12 +9,17 @@ const initialSearch = {
 	message: { value: '' },
 }
 let stompClient =null;
+const readStore = {
+
+}
+
 const ChatRoom = () => {
     const messagesEndRef = useRef(null)
+    const tabRef = useRef("CHATROOM")
 
-   
     const [privateChats, setPrivateChats] = useState(new Map());     
     const [publicChats, setPublicChats] = useState([]); 
+    const [read, setRead] = useState({})
     const [tab,setTab] =useState("CHATROOM");
     const [userData, setUserData] = useState({
         username: localStorage.getItem('userName') || '',
@@ -30,7 +34,10 @@ const ChatRoom = () => {
 	const [searchState, setSearchState] = useState(initialSearch)
     const {message} = searchState;
 
-      console.log('private chat',privateChats);
+    console.log('private chat',privateChats);
+    console.log('tab',tab)
+    console.log('read', read)
+
     useEffect(() => {
       console.log(userData);
     }, [userData]);
@@ -52,7 +59,12 @@ const ChatRoom = () => {
     const scrollToBottom = () => {
         console.log('scrollToBottom');
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-      }
+    }
+
+    const seenMessageAction = async (sender, receiver) => {
+        const res = await seenMessage(sender, receiver)
+        console.log('seen message res', res)
+    }
 
     const fetchConversation = async (userName) => {
         const res = await getConversations(userName);
@@ -63,9 +75,19 @@ const ChatRoom = () => {
                 const item = data[i];
                 if(item.userOne !== item.userTwo && item.userOne !== userName){
                     privateChats.set(item.userOne,[]);
+                    setRead({
+                        ...read,
+                        [item.userOne]: item.unReadOne
+                    })
+                    readStore[item.userOne] = item.unReadOne
                 }
                 if(item.userOne !== item.userTwo && item.userTwo !== userName){
                     privateChats.set(item.userTwo,[]);
+                    setRead({
+                        ...read,
+                        [item.userTwo]: item.unReadTwo
+                    })
+                    readStore[item.userTwo] = item.unReadTwo
                 }
             }
             setPrivateChats(privateChats);
@@ -137,16 +159,26 @@ const ChatRoom = () => {
         var payloadData = JSON.parse(payload.body);
         console.log("onPrivateMessage", payloadData);
         m.info(payloadData.senderName + " just sent you a message");
+        console.log("tab", tab, 'tabRef', tabRef, 'read', read, 'payloadData.senderName', payloadData.senderName)
+
+        if(tabRef.current !== payloadData.senderName){
+            readStore[payloadData.senderName] = readStore[payloadData.senderName] + 1
+            setRead({...readStore})
+            return
+        }
+       
         if(privateChats.get(payloadData.senderName)){
             console.log("privateChats 102", privateChats);
             privateChats.get(payloadData.senderName).push(payloadData);
             setPrivateChats(new Map(privateChats));
-        }else{
+        }if(!privateChats.get(payloadData.senderName)){
             let list =[];
             list.push(payloadData);
             privateChats.set(payloadData.senderName,list);
             setPrivateChats(new Map(privateChats));
         }
+        scrollToBottom()
+  
     }
 
     const onError = (err) => {
@@ -208,17 +240,22 @@ const ChatRoom = () => {
         <div className="chat-box">
             <div className="member-list">
                 <ul>
-                    <li onClick={()=>{setTab("CHATROOM")}} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li>
+                    <li onClick={()=>{
+                        tabRef.current = 'CHATROOM'
+                        setTab("CHATROOM")
+                        }} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li>
                     {[...privateChats.keys()].map((name,index)=>(
                         <li 
                             onClick={name === tab? () => {} : ()=>{
+                                tabRef.current = name
                                 setTab(name)
                                 setPage({current: 1, pageSize: 15})
                                 console.log('onclick name tab', name, userData.username)
+                                localStorage.removeItem(`${name}-unread`)
                                 // getPrivateChatHistory(userData.username, name);
                             }} 
-                            className={`member ${tab===name && "active"}`} key={index}>
-                                {name}
+                            className={`member ${tabRef.current===name && "active"}`} key={index}>
+                                {(read[name])? name + ` (${read[name]})`:  name}
                         </li>
                     ))}
                 </ul>

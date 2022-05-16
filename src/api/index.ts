@@ -58,6 +58,10 @@ export const getConversations = (sender: string) => {
 	return API.get(`/api/v1/chat-history/conversation/${sender}`)
 }
 
+export const seenMessage = (sender:string, receiver:string) => {
+	return API.get(`/api/v1/chat-history/seen?senderName=${sender}&receiverName=${receiver}`)
+}
+
 
 export const searchMeetup = (pageNumber: number, pageSize: number, q: string) => {
 	console.log('search meetup', `/api/v1/schedule/search?pageNumber=${pageNumber}&pageSize=${pageSize}${q}`)
