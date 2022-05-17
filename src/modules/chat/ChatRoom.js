@@ -63,7 +63,7 @@ const ChatRoom = () => {
     }, [searchUser])
 
     const fetchUser = async () => {
-        const r = await fetchUsers(searchUser);
+        const r = await fetchUsers(searchUser || '');
         console.log('r user', r)
         setUser(r.data?.responseData)
     }
@@ -257,6 +257,15 @@ const ChatRoom = () => {
         {userData.connected?
         <div className="chat-box">
             <div className="member-list">
+            <Select onClear={() => setSearchUser(null)}  onChange={(v) => { privateChats.set(v,[]);
+                            setPrivateChats(new Map(privateChats));
+                            setSearchUser(null)}} allowClear value={searchUser} showSearch placeholder='find a friend to talk' onSearch={e => setSearchUser(e)}  style={{ width: '100%' }} showArrow={false}>
+                    {user.map((item) => {
+                        return <Select.Option key={item.id} value={item.userName}><span 
+                        
+                        >{item.userName}</span></Select.Option>
+                    })}
+                </Select>
                 <ul>
                     {/* <li onClick={()=>{
                         tabRef.current = 'CHATROOM'
@@ -277,17 +286,7 @@ const ChatRoom = () => {
                         </li>
                     ))}
                 </ul>
-                <Select allowClear value={searchUser} showSearch placeholder='find a friend to talk' onSearch={e => setSearchUser(e)}  style={{ width: '100%' }}>
-                    {user.map((item) => {
-                        return <Select.Option key={item.id} value={item.userName}><span 
-                        onClick={() => {
-                            privateChats.set(item.userName,[]);
-                            setPrivateChats(new Map(privateChats));
-                            setSearchUser(null)
-                        }}
-                        >{item.userName}</span></Select.Option>
-                    })}
-                </Select>
+              
             </div>
             {tab==="CHATROOM" && <div className="chat-content">
                 <ul className="chat-messages">
@@ -317,7 +316,7 @@ const ChatRoom = () => {
 				    />
                     {(privateChats && privateChats?.get(tab)) && [...privateChats.get(tab)].map((chat,index)=> {
                        
-                        return<li  className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
+                        return <li  className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
                             {chat.senderName !== userData.username && <div><Avatar className="avatar">{generateAvatarName(chat?.senderName)}</Avatar></div>}
                             <div  className="message-data">{chat.message} <div><span style={{fontSize: '0.7rem'}}>{moment(chat?.date).fromNow() }</span></div></div>
                             {chat.senderName === userData.username && <div><Avatar className="avatar self">{generateAvatarName(chat?.senderName)}</Avatar></div>}

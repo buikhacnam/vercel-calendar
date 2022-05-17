@@ -3,7 +3,7 @@ import ChatRoom from '../../../modules/chat/ChatRoom'
 import './index.css'
 export default function Chat() {
   return (
-    <div>
+    <div style={{overflow: 'hidden'}}>
       <ChatRoom />
     </div>
   )

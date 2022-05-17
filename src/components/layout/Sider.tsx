@@ -91,9 +91,9 @@ const SiderDashboard: React.FC<SiderProps> = () => {
 							<span>Categories Manager</span>
 						</ItemStyled>
 					{/* </SubMenuStyled> */}
-					<ItemStyled key='/chat' icon={<MessageOutlined />}>
+					{/* <ItemStyled key='/chat' icon={<MessageOutlined />}>
 						Chat
-					</ItemStyled>
+					</ItemStyled> */}
 					<ItemStyled key='/about' icon={<HomeOutlined />}>
 						About
 					</ItemStyled>
