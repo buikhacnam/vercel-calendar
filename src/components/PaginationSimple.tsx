@@ -15,7 +15,7 @@ const RenderPaginationSimple = ({ count, page, setPage, loading }: RenderPaginat
 	function itemRender(current: any, type: any, originalElement: any) {
 	
 		if (type === 'next') {
-			return <Button type='link' loading={loading} disabled={loading}>{loading? 'Loading more...': 'Load more'}</Button>
+			return <Button type='link' loading={loading} disabled={loading}>{loading? <a>Loading more...</a>: <a>Load more</a>}</Button>
 		} else return null
 	
 	}

@@ -102,7 +102,7 @@ export const fetchUsers = (
 	textSearch: string
 ) => {
 	return API.get(
-		`api/v1/security/users?textSearch=${textSearch}`
+		`api/v1/security/user/search?textSearch=${textSearch}`
 	)
 }
 

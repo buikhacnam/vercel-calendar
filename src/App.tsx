@@ -11,6 +11,8 @@ const Components: TODO = {
 	LazyView2: lazy(() => import('./views/view2')),
 	LazyLoginView: lazy(() => import('./views/auth/Login4')),
 	LazyRegisterView: lazy(() => import('./views/signup/Signup')),
+
+	LazyChat: lazy(() => import('./views/dashboard/chat')),
 }
 
 const checkAuth = () => {
@@ -125,6 +127,12 @@ const App: React.FC<AppProps> = () => {
 							path='/signup'
 							element={
 								<LazyComponent component={'LazyRegisterView'} />
+							}
+						/>
+						<Route
+							path='/chat'
+							element={
+								<LazyComponent component={'LazyChat'} />
 							}
 						/>
 						<Route

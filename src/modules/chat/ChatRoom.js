@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
-import { getChatHistoryOfTwoUsers, getConversations, seenMessage } from '../../api';
+import { fetchUsers, getChatHistoryOfTwoUsers, getConversations, seenMessage } from '../../api';
 import RenderPaginationSimple from '../../components/PaginationSimple';
-import { Button, Input, message as m }  from 'antd';
+import { Button, Input, message as m, Avatar, Select }  from 'antd';
+import moment from 'moment';
+import generateAvatarName from '../../utils/common/generate-avatar-name';
 
 const initialSearch = {
 	message: { value: '' },
@@ -13,12 +15,13 @@ const readStore = {}
 
 const ChatRoom = () => {
     const messagesEndRef = useRef(null)
-    const tabRef = useRef("CHATROOM")
-
+    const tabRef = useRef(localStorage.getItem('userName' || ''))
+    const [user, setUser] = useState([])
+    const [searchUser, setSearchUser] = useState(null)
     const [privateChats, setPrivateChats] = useState(new Map());     
     const [publicChats, setPublicChats] = useState([]); 
     const [read, setRead] = useState({})
-    const [tab,setTab] =useState("CHATROOM");
+    const [tab,setTab] =useState(localStorage.getItem('userName' || ''));
     const [userData, setUserData] = useState({
         username: localStorage.getItem('userName') || '',
         receivername: '',
@@ -44,6 +47,7 @@ const ChatRoom = () => {
         if (localStorage.getItem('userName')) {
             registerUser();
             fetchConversation(localStorage.getItem('userName'))
+            
         }
     }, [])
 
@@ -53,6 +57,16 @@ const ChatRoom = () => {
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page])
+
+    useEffect(() => {
+        fetchUser();
+    }, [searchUser])
+
+    const fetchUser = async () => {
+        const r = await fetchUsers(searchUser);
+        console.log('r user', r)
+        setUser(r.data?.responseData)
+    }
 
     const scrollToBottom = () => {
         console.log('scrollToBottom');
@@ -133,7 +147,7 @@ const ChatRoom = () => {
         // eslint-disable-next-line default-case
         switch(payloadData.status){
             case "JOIN":
-                if(!privateChats.get(payloadData.senderName)){
+                if(!privateChats.get(payloadData.senderName) && payloadData.senderName === userData.username){
                     privateChats.set(payloadData.senderName,[]);
                     setPrivateChats(new Map(privateChats));
                 }
@@ -148,13 +162,11 @@ const ChatRoom = () => {
     const onPrivateMessage = (payload)=>{
         console.log(payload);
         var payloadData = JSON.parse(payload.body);
-        console.log("onPrivateMessage", payloadData);
+        console.log("onPrivateMessage", payloadData, 'privateChat', privateChats);
         m.info(payloadData.senderName + " just sent you a message");
         console.log("tab", tab, 'tabRef', tabRef, 'read', read, 'payloadData.senderName', payloadData.senderName)
 
         if(tabRef.current !== payloadData.senderName) {
-            
-
             if(!privateChats.get(payloadData.senderName)){
                 let list =[];
                 // list.push(payloadData);
@@ -170,9 +182,10 @@ const ChatRoom = () => {
         }
        
         if(privateChats.get(payloadData.senderName)){
-            console.log("privateChats 102", privateChats);
-            privateChats.get(payloadData.senderName).push(payloadData);
-            setPrivateChats(new Map(privateChats));
+            setPage({...page, current: 1})
+            // console.log("privateChats 102", privateChats);
+            // privateChats.get(payloadData.senderName).push(payloadData);
+            // setPrivateChats(new Map(privateChats));
         }
         // if(!privateChats.get(payloadData.senderName)){
         //     let list =[];
@@ -212,7 +225,8 @@ const ChatRoom = () => {
             senderName: userData.username,
             receiverName:tab,
             message: userData.message,
-            status:"MESSAGE"
+            status:"MESSAGE",
+            date: new Date().toLocaleString()
           };
           
           if(userData.username !== tab){
@@ -237,16 +251,17 @@ const ChatRoom = () => {
     const registerUser=()=>{
         connect();
     }
+  
     return (
-    <div className="container">
+    <div className="container" >
         {userData.connected?
         <div className="chat-box">
             <div className="member-list">
                 <ul>
-                    <li onClick={()=>{
+                    {/* <li onClick={()=>{
                         tabRef.current = 'CHATROOM'
                         setTab("CHATROOM")
-                        }} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li>
+                        }} className={`member ${tab==="CHATROOM" && "active"}`}>Loa lớn</li> */}
                     {[...privateChats.keys()].map((name,index)=>(
                         <li 
                             onClick={name === tab? () => { seenMessageAction(userData.username, name)} : ()=>{
@@ -262,6 +277,17 @@ const ChatRoom = () => {
                         </li>
                     ))}
                 </ul>
+                <Select allowClear value={searchUser} showSearch placeholder='find a friend to talk' onSearch={e => setSearchUser(e)}  style={{ width: '100%' }}>
+                    {user.map((item) => {
+                        return <Select.Option key={item.id} value={item.userName}><span 
+                        onClick={() => {
+                            privateChats.set(item.userName,[]);
+                            setPrivateChats(new Map(privateChats));
+                            setSearchUser(null)
+                        }}
+                        >{item.userName}</span></Select.Option>
+                    })}
+                </Select>
             </div>
             {tab==="CHATROOM" && <div className="chat-content">
                 <ul className="chat-messages">
@@ -271,6 +297,7 @@ const ChatRoom = () => {
                             {chat.senderName !== userData.username && <div className="avatar">{chat.senderName}</div>}
                             <div className="message-data">{chat.message}</div>
                             {chat.senderName === userData.username && <div className="avatar self">{chat.senderName}</div>}
+                            
                         </li>
                     ))}
                 </ul>
@@ -288,12 +315,15 @@ const ChatRoom = () => {
                         page={page}         
                         setPage={setPage}
 				    />
-                    {[...privateChats.get(tab)].map((chat,index)=> {
-                        return <li className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
-                            {chat.senderName !== userData.username && <div className="avatar">{chat.senderName}</div>}
-                            <div className="message-data">{chat.message}</div>
-                            {chat.senderName === userData.username && <div className="avatar self">{chat.senderName}</div>}
+                    {(privateChats && privateChats?.get(tab)) && [...privateChats.get(tab)].map((chat,index)=> {
+                       
+                        return<li  className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
+                            {chat.senderName !== userData.username && <div><Avatar className="avatar">{generateAvatarName(chat?.senderName)}</Avatar></div>}
+                            <div  className="message-data">{chat.message} <div><span style={{fontSize: '0.7rem'}}>{moment(chat?.date).fromNow() }</span></div></div>
+                            {chat.senderName === userData.username && <div><Avatar className="avatar self">{generateAvatarName(chat?.senderName)}</Avatar></div>}
+                             
                         </li>
+                        
                     })}
 
                     <div ref={messagesEndRef} />
@@ -308,7 +338,7 @@ const ChatRoom = () => {
         </div>
         :
         <div className="register">
-            <input
+            {/* <input
                 id="user-name"
                 placeholder="Enter your name"
                 name="userName"
@@ -318,7 +348,8 @@ const ChatRoom = () => {
               />
               <button type="button" onClick={registerUser}>
                     connect
-              </button> 
+              </button>  */}
+              Loading...
         </div>}
     </div>
     )
