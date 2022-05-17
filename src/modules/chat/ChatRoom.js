@@ -119,7 +119,7 @@ const ChatRoom = () => {
     }
 
     const connect =()=>{
-        let Sock = new SockJS('http://localhost:8888/ws');
+        let Sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
         // let Sock = new SockJS('http://192.168.0.149:9998/api/websocket');
 
         stompClient = over(Sock);
