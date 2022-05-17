@@ -28,9 +28,13 @@ API.interceptors.request.use((req: TODO) => {
 					console.log('err below')
 					console.log(error.response.data.message)
 				})
-			window.location.href = '/login'
-			localStorage.removeItem('userName')
+				localStorage.removeItem('userName')
 			localStorage.removeItem('userRole')
+			Cookies.remove('crm-access')
+			Cookies.remove('crm-refresh')
+			Cookies.remove('crm-user')
+			window.location.href = '/login'
+			
 		}
 		req.headers.Authorization = `Bearer ${accessToken}`
 	}
